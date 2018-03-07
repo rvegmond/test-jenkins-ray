@@ -1,9 +1,14 @@
 pipeline {
-    agent { docker 'python:3.5.1' }
+    agent {
+	{ label 'ecs' }
+        docker { 
+	   image 'node:7-alpine'
+        }
+    }
     stages {
-        stage('build') {
+        stage('Test') {
             steps {
-                sh 'python --version'
+                sh 'node --version'
             }
         }
     }

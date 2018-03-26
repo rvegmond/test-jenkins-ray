@@ -18,5 +18,5 @@ node('mgmt-slave') {
     zip archive: true, glob: '*.txt', zipFile: 'artifact.zip'
 
     stage "Upload Artifact to s3"
-    s3Upload acl: 'Private', bucket: 'test-mgm-artifact-bucket', path: 'test1', cacheControl: '', excludePathPattern: '', file: 'artifact.zip', includePathPattern: '', metadatas: [''], workingDir: ''
+    s3Upload acl: 'Private', bucket: 'test-mgm-artifact-bucket', path: 'test1', file: 'artifact.zip'
 }

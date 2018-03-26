@@ -1,4 +1,7 @@
 // This shows a simple example of how to archive the build output artifacts.
+
+def artifact_name = 'artifact.zip'
+
 node('mgmt-slave') {
     stage "Create build output"
 
@@ -15,8 +18,8 @@ node('mgmt-slave') {
 
     // Archive the build output artifacts.
     // archiveArtifacts artifacts: 'output/*.txt', excludes: 'output/*.md'
-    zip archive: true, glob: '*.txt', zipFile: 'artifact.zip'
+    zip archive: true, glob: '*.txt', zipFile: artifact_name
 
     stage "Upload Artifact to s3"
-    s3Upload acl: 'Private', bucket: 'test-mgm-artifact-bucket', path: 'test1/', file: 'artifact.zip'
+    s3Upload acl: 'Private', bucket: 'test-mgm-artifact-bucket', path: 'test1/' + artifact_name , file: artifact_name
 }

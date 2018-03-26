@@ -1,45 +1,22 @@
-pipeline {
+// This shows a simple example of how to archive the build output artifacts.
+node('mgmt-slave') {
+    stage "Create build output"
 
-  parameters {
-    string(name: 'AppName', defaultValue: 'mobapp', description: 'What application are we going to deploy today?')
-    string(name: 'EnvName', defaultValue: 'dev', description: 'What environment are we deploying?')
-    string(name: 'S3Bucket', defaultValue: 'mobapp-jenkins-artifacts', description: 'What S3 Bucket should be used to store/fetch application artifacts?')
-  }
+    // Make the output directory.
+    sh "mkdir -p output"
 
-  agent mgmt-slave
+    // Write an useful file, which is needed to be archived.
+    writeFile file: "output/usefulfile.txt", text: "This file is useful, need to archive it."
 
-  stages {
+    // Write an useless file, which is not needed to be archived.
+    writeFile file: "output/uselessfile.md", text: "This file is useless, no need to archive it."
 
-    stage('Build') {
-      steps {
-        echo '--------------------------------------'
-        echo 'Building'
-        echo '--------------------------------------'
-        sh "mkdir -p output"
-        # Write an useful file, which is needed to be archived.
-        echo "This file is useful, need to archive it." > output/usefulfile.txt"
-        echo "This file is useless, no need to archive it." > output/usefulfile.md"
-      }
-    }
+    stage "Archive build output"
 
-    stage('Create Archive') {
-      steps {
-        echo '--------------------------------------'
-        echo "Creating zip ..."
-        echo '--------------------------------------'
-        zip archive: true, dir: '', glob: 'output/*txt', zipFile: 'FancyArtifact.zip'
-      }
-    }
+    // Archive the build output artifacts.
+    // archiveArtifacts artifacts: 'output/*.txt', excludes: 'output/*.md'
+    zip archive: true, glob: '*.txt', zipFile: 'artifact.zip'
 
-    stage('Push to S3') {
-      steps {
-        echo '--------------------------------------'
-        echo "Upload to S3"
-        echo '--------------------------------------'
-        withAWS() {
-          s3Upload(file:"FancyArtifact.zip", bucket:"test-mgm-artifact-bucket", path:"FancyArtifact.zip")
-        }
-      }
-    }
-  }
+    stage "Upload Artifact to s3"
+    s3Upload acl: 'Private', bucket: 'test-mgm-artifact-bucket', path: 'test1', cacheControl: '', excludePathPattern: '', file: 'artifact.zip', includePathPattern: '', metadatas: [''], workingDir: ''
 }

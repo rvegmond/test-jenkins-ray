@@ -2,7 +2,8 @@
 
 def artifact_name = 'artifact.zip'
 
-node('mgmt-slave') {
+// node('mgmt-slave') {
+node() {
     stage "Create build output"
 
     // Make the output directory.

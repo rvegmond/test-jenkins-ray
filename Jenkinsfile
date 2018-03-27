@@ -21,5 +21,5 @@ node('mgmt-slave') {
     zip archive: true, glob: '*.txt', zipFile: artifact_name
 
     stage "Upload Artifact to s3"
-    s3Upload acl: 'Private', bucket: 'test-mgm-artifact-bucket', path: 'test1/' + artifact_name , file: artifact_name
+    s3Upload acl: 'Private', bucket: 'knab-artifact-bucket-mgmt', path: 'test1/' + artifact_name , file: artifact_name
 }

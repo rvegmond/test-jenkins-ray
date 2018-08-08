@@ -9,7 +9,7 @@ pipeline {
     stage('First step') {
       steps {
         echo "Dummy"
-        echo "variable dus=${dus}"
+        echo "variable "
       }
     }
     stage('third step') {

@@ -19,6 +19,13 @@ pipeline {
         echo "Container version: ${BUILD_NUMBER}"
       }
     }
+    stage('approve') {
+      steps {
+        timeout(time: 7, unit: 'DAYS') {
+          input message: 'Do you want to deploy?', submitter: 'ops'
+        }
+      }
+    }
     stage('third step') {
       steps {
         echo "Dummy"

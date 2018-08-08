@@ -12,13 +12,6 @@ pipeline {
         echo "variable "
       }
     }
-    stage('third step') {
-      steps {
-        echo "Dummy"
-        echo "variable dus=${dus}"
-      }
-    }
-
     stage('second step') {
       steps {
         // Load all variables set in the version file
@@ -26,6 +19,14 @@ pipeline {
         echo "Container version: ${BUILD_NUMBER}"
       }
     }
+    stage('third step') {
+      steps {
+        echo "Dummy"
+        echo "variable dus=${dus}"
+      }
+    }
+
+
   }
 
 }

@@ -1,5 +1,5 @@
 pipeline {
-  agent { }
+  agent any
   environment {
     // Application-specific arguments
     STACK = 'ins_csp'

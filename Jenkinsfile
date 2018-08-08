@@ -1,25 +1,31 @@
-// This shows a simple example of how to archive the build output artifacts.
+pipeline {
+  agent { }
+  environment {
+    // Application-specific arguments
+    STACK = 'ins_csp'
+  }
 
-def artifact_name = 'artifact.zip'
+  stages {
+    stage('First step') {
+      steps {
+        echo "Dummy"
+        echo "variable dus=${dus}"
+      }
+    }
+    stage('third step') {
+      steps {
+        echo "Dummy"
+        echo "variable dus=${dus}"
+      }
+    }
 
-node('ecs-mgmt-build-slave') {
-    stage "Create build output"
+    stage('second step') {
+      steps {
+        // Load all variables set in the version file
+        load ".env.test"
+        echo "Container version: ${BUILD_NUMBER}"
+      }
+    }
+  }
 
-    // Make the output directory.
-    sh "mkdir -p output"
-
-    // Write an useful file, which is needed to be archived.
-    writeFile file: "output/usefulfile.txt", text: "This file is useful, need to archive it."
-
-    // Write an useless file, which is not needed to be archived.
-    writeFile file: "output/uselessfile.md", text: "This file is useless, no need to archive it."
-
-    stage "Archive build output"
-
-    // Archive the build output artifacts.
-    // archiveArtifacts artifacts: 'output/*.txt', excludes: 'output/*.md'
-    zip archive: true, glob: '*.txt', zipFile: artifact_name
-
-    stage "Upload Artifact to s3"
-    s3Upload acl: 'Private', bucket: 'knab-artifact-bucket-mgmt', path: 'test1/' + artifact_name , file: artifact_name
 }

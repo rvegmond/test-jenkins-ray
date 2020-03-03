@@ -1,8 +1,32 @@
 version: 2.1
 jobs:
-  build:
+  deploy:
     docker: 
       - image: circleci/node:4.8.2 # the primary container, where your job's commands are run
     steps:
       - checkout # check out the code in the project directory
       - run: echo "hello world" # run the `echo` command
+      
+workflows:
+  version: 2
+
+  # This workflow is pre-merge of the PR and is intended to run against the PR in both the draft and final state.
+  # It can also run against any push if desirable. This behaviour can be adjusted in the CircleCI settings for this workflow.
+  # Deployments to the dev environment are automatic if there are no errors.
+  pre_merge:
+    jobs:
+      - approve:
+          type: approval
+          filters:
+            branches:
+              only: master
+            tags:
+              only: /.*/
+
+      - deploy:
+          requires: [approve]
+          filters:
+            branches:
+              only: master
+            tags:
+              only: /.*/

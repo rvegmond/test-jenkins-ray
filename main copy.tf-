@@ -1,0 +1,36 @@
+provider "aws" {
+  region  = "eu-central-1"
+}
+
+provider "aws" {
+    alias   = "dns" 
+    profile = "gdl-netservices-pr"
+    region  = "us-east-1"
+}
+
+resource "aws_acm_certificate" "cert" {
+    domain_name       = "api.st1.gdlservices.nl"
+    validation_method = "DNS"
+}
+
+data "aws_route53_zone" "zone" {
+    provider     = aws.dns
+    name         = "gdlservices.nl."
+    private_zone = false
+}
+
+resource "aws_route53_record" "cert_validation" {
+    provider    = aws.dns
+    name        = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_name}"
+    type        = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_type}"
+    zone_id     = "${data.aws_route53_zone.zone.id}"
+    records     = ["${aws_acm_certificate.cert.domain_validation_options.0.resource_record_value}"]
+    ttl         = 60
+}
+
+resource "aws_acm_certificate_validation" "cert" {
+  certificate_arn         = "${aws_acm_certificate.cert.arn}"
+  validation_record_fqdns = [
+      "${aws_route53_record.cert_validation.fqdn}"
+    ]
+}
